@@ -16,15 +16,14 @@ class PokemonAPIClient(IPokemonAPIClient):
     """Pokemon API client."""
 
     def __init__(self, api_url: str, timeout: int) -> None:
-        self.url = api_url
+        self.api_url = api_url
         self.timeout = timeout
-
-    def __init__(self,) -> None:
-        pass
 
     def get_all_pokemons(self) -> dict:
         """Get all pokemons from external API."""
-        return requests.get('https://pokeapi.co/api/v2/pokemon').json()
+        return requests.get(
+            url=self.api_url,
+            timeout=self.timeout).json()
 
 
 class PokemonAPIClientMock(IPokemonAPIClient):
