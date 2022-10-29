@@ -2,6 +2,7 @@
 and it will help tho shows how to unittest injecting our mocks depending on the 
 environment (develop/test will use our mocks).
 """
+from email.policy import default
 import requests
 
 from abc import ABC, abstractmethod
@@ -82,14 +83,18 @@ class Container(containers.DeclarativeContainer):
     )
 
 
-def pokemon_service_factory(service: PokemonService=Provide[Container.pokemon_service]) -> PokemonService:
+def pokemon_service_factory() -> PokemonService:
     """Pokemon service factory.
     To-Do: the mocks need to be injected here. 
     """
     container = Container()
+    container.config.env.from_env('APP_ENV', default='test')
     container.config.api_url.from_env('POKEMON_API_URL', default='https://pokeapi.co/api/v2/pokemon')
     container.config.timeout.from_env('REQUEST_TIMEOUT', default=5)
     container.wire(modules=[__name__])
+    if container.config.env() == 'test':
+        print('Using mock for Pokemon API client')
+        container.pokemon_api_client.override(PokemonAPIClientMock())
 
     return container.pokemon_service()
 
