@@ -5,6 +5,7 @@ environment (develop/test will use our mocks).
 import requests
 
 from abc import ABC, abstractmethod
+from dependency_injector import containers, providers
 
 # I've made this an abstract class so that we can mock it in our tests and assure
 # that we implement the same interface with our mock.
@@ -59,6 +60,25 @@ class PokemonService:
         """Get all pokemons."""
         return self.pokemon_api_client.get_all_pokemons()
 
+
+class Container(containers.DeclarativeContainer):
+    """Container.
+    provides the dependency injection.
+    This container will be used to inject our dependencies.
+    """
+
+    config = providers.Configuration()
+
+    pokemon_api_client = providers.Singleton(
+        PokemonAPIClient,
+        api_url=config.api_url,
+        timeout=config.timeout,
+    )
+
+    pokemon_service = providers.Factory(
+        PokemonService,
+        pokemon_api_client=pokemon_api_client,
+    )
 
 if __name__ == '__main__':
     """
