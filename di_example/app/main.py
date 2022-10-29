@@ -1,3 +1,7 @@
+""" This example is far more complex than the previous one, but it's more realistic.
+and it will help tho shows how to unittest injecting our mocks depending on the 
+environment (develop/test will use our mocks).
+"""
 import requests
 
 from abc import ABC, abstractmethod
@@ -36,3 +40,25 @@ class PokemonAPIClientMock(IPokemonAPIClient):
         }
 
 
+class PokemonService:
+    """Pokemon service."""
+
+    def __init__(self, pokemon_api_client: IPokemonAPIClient):
+        self.pokemon_api_client = pokemon_api_client
+
+    def get_all_pokemons(self):
+        """Get all pokemons."""
+        return self.pokemon_api_client.get_all_pokemons()
+
+
+if __name__ == '__main__':
+    """
+    This is startup code needs to change depending on the environment.
+    To-Do: implement using a factory pattern.
+    """
+    pokemon_service = PokemonService(
+        pokemon_api_client=PokemonAPIClient(
+            api_url='https://pokeapi.co/api/v2/pokemon',
+            timeout=5
+        ))
+    print(pokemon_service.get_all_pokemons())
