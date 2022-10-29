@@ -6,6 +6,7 @@ import requests
 
 from abc import ABC, abstractmethod
 from dependency_injector import containers, providers
+from dependency_injector.wiring import Provide
 
 # I've made this an abstract class so that we can mock it in our tests and assure
 # that we implement the same interface with our mock.
@@ -80,14 +81,22 @@ class Container(containers.DeclarativeContainer):
         pokemon_api_client=pokemon_api_client,
     )
 
+
+def pokemon_service_factory(service: PokemonService=Provide[Container.pokemon_service]) -> PokemonService:
+    """Pokemon service factory.
+    To-Do: the mocks need to be injected here. 
+    """
+    container = Container()
+    container.config.api_url.from_env('POKEMON_API_URL', default='https://pokeapi.co/api/v2/pokemon')
+    container.config.timeout.from_env('REQUEST_TIMEOUT', default=5)
+    container.wire(modules=[__name__])
+
+    return container.pokemon_service()
+
+
 if __name__ == '__main__':
+    """startup code.
     """
-    This is startup code needs to change depending on the environment.
-    To-Do: implement using a factory pattern.
-    """
-    pokemon_service = PokemonService(
-        pokemon_api_client=PokemonAPIClient(
-            api_url='https://pokeapi.co/api/v2/pokemon',
-            timeout=5
-        ))
+
+    pokemon_service = pokemon_service_factory()
     print(pokemon_service.get_all_pokemons())
