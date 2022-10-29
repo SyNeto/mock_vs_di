@@ -44,6 +44,15 @@ class PokemonService:
     """Pokemon service."""
 
     def __init__(self, pokemon_api_client: IPokemonAPIClient):
+        """Initialize Pokenmon service.
+        The dependency injection is not only helpful for testing, but also
+        for decoupling our code.
+        
+        This way we can easily change our Pokemon API client for another one
+        if we need to.
+        
+        take as example the PokemonAPIClientMock, we can easily change it for
+        other client that implements the same interface."""
         self.pokemon_api_client = pokemon_api_client
 
     def get_all_pokemons(self):
