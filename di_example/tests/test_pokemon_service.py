@@ -1,13 +1,13 @@
 from unittest import TestCase
 
-from app.main import PokemonService, PokemonAPIClientMock
+from app.main import pokemon_service_factory
 
 
 class TestPokemonService(TestCase):
     """Test Pokemon service."""
 
     def setUp(self) -> None:
-        self.pokemon_service = PokemonService(pokemon_api_client=PokemonAPIClientMock())
+        self.pokemon_service = pokemon_service_factory(app_env='test')
         return super().setUp()
 
     def test_get_all_pokemons(self):
